@@ -1,28 +1,34 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Image, ListGroup, Card, Button } from 'react-bootstrap'
+import { Row, Col, Image, ListGroup, Card, Button, FormControl } from 'react-bootstrap'
 import Rating from '../components/Rating'
 
 import { listProductDetails } from '../actions/productActions'
 import Loader from '../components/Loader'
 import Message from '../components/Message'
 
-const ProductScreen = ({match}) => {
+const ProductScreen = ({match, history}) => {
+    const [qty, setQty] = useState(1)
 
     const dispatch = useDispatch();
 
     const productDetails = useSelector(state => state.productDetails)
     const { loading, error, product } = productDetails
+
+   // const qtdProducts = Array(product.countInStock - 1).fill(null).map((u,i)=> i)
     
 
     useEffect(()=>{
         dispatch(listProductDetails(match.params.id))
     }, [dispatch, match])
 
+    const addToCartHandler = () =>{
+        history.push(`/cart/${match.params.id}?qty=${qty}`)
+    }
     
     return (
-
+        
         <>
             <Link className="btn btn-light my-3" to="/">
                 Go back
@@ -67,8 +73,28 @@ const ProductScreen = ({match}) => {
                                     </Col>
                                 </Row>
                             </ListGroup.Item>
+                            {product.countInStock > 0 && (
+                                <ListGroup.Item>
+                                    <Row>
+                                        <Col>QTD</Col>
+                                        <Col>
+                                            <FormControl as='select' value={qty} onChange={(e)=> setQty(e.target.value)}>
+                                                {
+                                                    [...Array(product.countInStock).keys()].map(x => (
+                                                        <option key={x + 1} value={x+1}>{x+1}</option>
+                                                    ))}
+
+                                                {/* {qtdProducts.map(x => (
+                                                        <option key={x+1} value={x+1}>{x+1}</option>
+                                                ))} */}
+                                            </FormControl>
+                                        </Col>
+                                    </Row>
+                                </ListGroup.Item>
+                            )}
+                            {console.log(product.countInStock)}
                             <ListGroup.Item>
-                                <Button className='btn-block' type='button' disabled={product.countInStock === 0}>
+                                <Button className='btn-block' type='button' disabled={product.countInStock === 0} onClick={addToCartHandler}>
                                     Add To Cart
                                 </Button>
                             </ListGroup.Item>
