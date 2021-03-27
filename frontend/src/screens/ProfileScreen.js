@@ -34,8 +34,19 @@ const ProfileScreen = ({ history}) => {
             history.push('/login')
         }
         else{
+            console.log("------------user-----" )
             console.log(user)
+            console.log("u------------------" )
+
+            // if(success){
+                
+            //     console.log("success") 
+            //     dispatch(getUserDetails('profile'))
+            //     return
+            // }
+
             if(!user || !user.name || success){
+                console.log("Ta iiiiio")
                 dispatch(getUserDetails('profile'))
                 dispatch({type: USER_UPDATE_PROFILE_RESET})
             } else{
@@ -44,7 +55,7 @@ const ProfileScreen = ({ history}) => {
                 setEmail(user.email)
             }
         }
-    }, [dispatch, history, userInfo, user])
+    }, [dispatch, history, userInfo, user, success])
 
 
 
