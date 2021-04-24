@@ -62,10 +62,7 @@ const orderSchema = mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
-    },
-    isPaid: {
-        type: Date,
-    },
+    }
 
 }, {
     timestamps: true
