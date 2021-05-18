@@ -7,9 +7,9 @@ import {Link} from 'react-router-dom'
 import Message from '../components/Message';
 import Loader from '../components/Loader';
 import { getOrdersDetails, payOrder } from '../actions/orderActions'
-import { ORDER_PAY_RESET} from '../constants/orderConstants'
+import { ORDER_PAY_RESET , ORDER_DETAILS_RESET} from '../constants/orderConstants'
 
-const OrderScreen = ({match}) => {
+const OrderScreen = ({match, history}) => {
 
     const orderId = match.params.id 
 
@@ -23,15 +23,30 @@ const OrderScreen = ({match}) => {
     const orderPay = useSelector(state => state.orderPay)
     const { loading:loadingPay, success: successPay } = orderPay
 
+    //usurio
+    const userLogin = useSelector(state => state.userLogin)
+    const { userInfo } = userLogin
+
     if(!loading){
         const addDecimals = (num) => {
             return (Math.round(num * 100) / 100).toFixed(2)
         }
-    
-        order.itemsPrice = addDecimals(
-            order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-        )
+        if(order){
+            order.itemsPrice = addDecimals(
+                order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0)
+            )
+        }
     }
+
+    const decimals = (num) => {
+        return (Math.round(num * 100) / 100).toFixed(2)
+    }
+
+    // useEffect(()=>{
+    //     if(!userInfo){
+    //         history.push('/login')
+    //     }
+    // }, [userInfo, history, dispatch])
 
 
     useEffect(()=>{
@@ -47,22 +62,29 @@ const OrderScreen = ({match}) => {
             }
             document.body.appendChild(script)
         }
-    
-        
-        if(!order || successPay ||  order._id !== orderId){
-            dispatch({type: ORDER_PAY_RESET})
-            dispatch(getOrdersDetails(orderId))
-        }
-        else if(!order.isPaid){
-            if(!window.paypal){
-                addPaymentScript()
-            }
-            else{
-                setSdkReady(true)
-            }
-        }
 
-    }, [dispatch, order, orderId, successPay])
+   
+        if(!userInfo){
+            history.push('/login')
+        }
+        else{
+            if(!order || successPay ||  order._id !== orderId){
+                dispatch({type: ORDER_PAY_RESET})
+               // dispatch({type: ORDER_DETAILS_RESET})
+                dispatch(getOrdersDetails(orderId))
+            }
+            else if(!order.isPaid){
+                if(!window.paypal){
+                    addPaymentScript()
+                }
+                else{
+                    setSdkReady(true)
+                }
+            }
+        }
+        
+
+    }, [dispatch, order, orderId, successPay, userInfo, history])
 
     const successPaymentHandler = (paymentResult) => {
         console.log(" func successPaymentHandler")
@@ -72,7 +94,7 @@ const OrderScreen = ({match}) => {
 
     }
 
-    return loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : <>
+    return loading || !order ? <Loader /> : error ? <Message variant='danger'>{error}</Message> : <>
         <h1>Order {orderId._id}</h1>
         <Row>
                 <Col md={8}>
@@ -127,7 +149,7 @@ const OrderScreen = ({match}) => {
                                                     </Link>
                                                 </Col>
                                                 <Col md={4}>
-                                                    {item.qty} x ${item.price} = ${item.qty * item.price}
+                                                    {item.qty} x ${item.price} = ${decimals(item.qty * item.price)}
                                                 </Col>
                                             </Row>
                                         </ListGroup.Item>
