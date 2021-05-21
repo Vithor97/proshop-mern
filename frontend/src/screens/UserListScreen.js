@@ -41,6 +41,7 @@ const UserListScreen = ({ history }) => {
             }, 3000)
         }
     }, [successUpdate])
+    
     const deleteHandler = (id) => {
         if(window.confirm('Tem certeza que deseja excluir?')){
             dispatch(deleteUsers(id))

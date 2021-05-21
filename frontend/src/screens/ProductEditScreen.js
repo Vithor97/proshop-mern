@@ -7,7 +7,7 @@ import Message from '../components/Message';
 import Loader from '../components/Loader';
 import FormContainer from '../components/FormContainer'
 import { listProductDetails, updateProduct } from '../actions/productActions'
-import {USER_UPDATE_RESET} from '../constants/userConstants'
+//import {USER_UPDATE_RESET} from '../constants/userConstants'
 import { PRODUCT_UPDATE_RESET, PRODUCT_DETAILS_RESET } from '../constants/productConstants';
 
 const ProductEditScreen = ({match, history}) => {
