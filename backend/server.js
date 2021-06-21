@@ -3,6 +3,7 @@ const express = require('express')
 
 const dotenv = require('dotenv')
 const connectDB = require('./config/db')
+const morgan = require('morgan')
 
 const productRoutes = require('./routes/productRoutes')
 const userRoutes = require('./routes/userRoutes')
@@ -16,10 +17,9 @@ connectDB()
 
 const app = express();
 
-app.use(function(req, res, next){
-    console.log(path.join(__dirname, '/uploads'))
-    next()
-})
+if(process.env.NODE_ENV === 'development'){
+    app.use(morgan('dev'))
+}
 
 app.use(express.json())
 
