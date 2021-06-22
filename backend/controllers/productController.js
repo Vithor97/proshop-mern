@@ -139,9 +139,24 @@ const createProductReview  = asyncHandler(async(req, res)=>{
         throw new Error('Product not found')
     }
 
-  
 })
 
-module.exports =  { getProductById, getProducts, deleteProduct, createProduct, updateProduct, createProductReview}
+//@desc Get top rated products
+//@route GET /api/products/top
+//@access public
+const getTopProducts = asyncHandler(async(req, res)=>{
+    const products = await Product.find({}).sort({ rating: -1 }).limit(3)
+
+    res.json(products)
+})
+
+module.exports =  { getProductById, 
+                    getProducts, 
+                    deleteProduct, 
+                    createProduct, 
+                    updateProduct, 
+                    createProductReview,
+                    getTopProducts
+                }
 
 
